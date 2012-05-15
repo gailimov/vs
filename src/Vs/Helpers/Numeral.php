@@ -21,27 +21,50 @@ namespace Vs\Helpers;
 class Numeral
 {
     /**
-     * Returns right variant of ending depending on amount
+     * Returns variant with proper ending depending on amount
      *
      * Usage example:
      *
      *     // Displays "22 комментария"
-     *     echo '22 ' . Numeral::pluralize(22, array('комментарий', 'комментария', 'комментариев'));
+     *     echo '22 ' . Numeral::choosePlural(22, array('комментарий', 'комментария', 'комментариев'));
      *
      * @param  int   $amount   Amount of items
      * @param  array $variants Variants (forms) of items
      * @return string
      */
-    public static function pluralize($amount, array $variants)
+    public static function choosePlural($amount, array $variants)
     {
         $num10 = $amount % 10;
         $num100 = $amount % 100;
 
-        if ($num10 == 1 && $num100 != 11)
+        if (($num10 == 1) && ($num100 != 11))
             return $variants[0];
-        elseif ($num10 >= 2 && $num10 <= 4 && $num100 < 10 || $num100 >= 20)
+        elseif (($num10 >= 2) && ($num10 <= 4) && (($num100 < 10) || ($num100 >= 20)))
             return $variants[1];
         else
             return $variants[2];
+    }
+
+    /**
+     * Returns variant with proper ending and amount depending on amount.
+     * You also can set variant for absence (zero) amount.
+     *
+     * Usage example:
+     *
+     *     // Displays "0 комментариев"
+     *     echo Numeral::getPlural(0, array('комментарий', 'комментария', 'комментариев'));
+     *     // Displayes "нет комментариев"
+     *     echo Numeral::getPlural(0, array('комментарий', 'комментария', 'комментариев'), 'нет комментариев');
+     *
+     * @param  int    $amount   Amount of items
+     * @param  array  $variants Variants (forms) of items
+     * @param  string $absence  Variant for absence amount (zero)
+     * @return string
+     */
+    public static function getPlural($amount, array $variants, $absence = null)
+    {
+        if ($amount || $absence == null)
+            return sprintf('%d %s', $amount, self::choosePlural($amount, $variants));
+        return $absence;
     }
 }
