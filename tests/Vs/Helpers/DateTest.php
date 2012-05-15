@@ -27,6 +27,7 @@ class DateTest extends PHPUnit_Framework_TestCase
 
     public function testDiff()
     {
+        $this->assertEquals('только что', Date::diff('2012-05-15 15:08:45', '2012-05-15 15:08:45'));
         $this->assertEquals('1 минуту назад', Date::diff('2012-05-15 15:08:45', '2012-05-15 15:09:45'));
         $this->assertEquals('24 минуты назад', Date::diff('2012-05-15 15:08:45', '2012-05-15 15:32:45'));
         $this->assertEquals('49 минут назад', Date::diff('2012-05-15 15:08:45', '2012-05-15 15:57:45'));

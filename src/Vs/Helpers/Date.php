@@ -91,22 +91,20 @@ class Date
     {
         $diff = (($to) ? strtotime($to) : time()) - strtotime($from);
 
-        if ($diff <= 3600) {
-            $mins = round($diff / 60);
-            return self::since($mins, array('минуту', 'минуты', 'минут'));
-        } elseif ($diff <= 86400 && $diff > 3600) {
-            $hours = round($diff / 3600);
-            return self::since($hours, array('час', 'часа', 'часов'));
-        } elseif ($diff >= 86400) {
-            $days = round($diff / 86400);
-            return self::since($days, array('день', 'дня', 'дней'));
-        }
+        if ($diff <= 3600)
+            return self::since(round($diff / 60), array('минуту', 'минуты', 'минут'));
+        elseif ($diff <= 86400 && $diff > 3600)
+            return self::since(round($diff / 3600), array('час', 'часа', 'часов'));
+        elseif ($diff >= 86400)
+            return self::since(round($diff / 86400), array('день', 'дня', 'дней'));
     }
 
     private static function since($measure, array $variants)
     {
         if ($measure >= 1)
             return sprintf('%s назад', Numeral::getPlural($measure, $variants));
+        elseif ($measure == 0)
+            return 'только что';
         return sprintf('через %s', Numeral::getPlural(abs($measure), $variants));
     }
 }
