@@ -37,12 +37,11 @@ class Numeral
         $num10 = $amount % 10;
         $num100 = $amount % 100;
 
-        if (($num10 == 1) && ($num100 != 11))
+        if ($num10 == 1 && $num100 != 11)
             return $variants[0];
-        elseif (($num10 >= 2) && ($num10 <= 4) && (($num100 < 10) || ($num100 >= 20)))
+        elseif ($num10 >= 2 && $num10 <= 4 && ($num100 < 10 || $num100 >= 20))
             return $variants[1];
-        else
-            return $variants[2];
+        return $variants[2];
     }
 
     /**
@@ -63,8 +62,6 @@ class Numeral
      */
     public static function getPlural($amount, array $variants, $absence = null)
     {
-        if ($amount || $absence == null)
-            return sprintf('%d %s', $amount, self::choosePlural($amount, $variants));
-        return $absence;
+        return ($amount || !$absence) ? sprintf('%d %s', $amount, self::choosePlural($amount, $variants)) : $absence;
     }
 }
