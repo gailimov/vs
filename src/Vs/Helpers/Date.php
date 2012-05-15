@@ -13,6 +13,8 @@
 
 namespace Vs\Helpers;
 
+require_once 'Numeral.php';
+
 /**
  * Helper for working with dates
  *
@@ -76,5 +78,35 @@ class Date
         }
 
         return $result;
+    }
+
+    /**
+     * Returns difference between dates
+     *
+     * @param  string $from Datetime from which the difference begins.
+     * @param  string $to   Datetime to end the difference. Default becomes time() if not set.
+     * @return string
+     */
+    public static function diff($from, $to = null)
+    {
+        $diff = (($to) ? strtotime($to) : time()) - strtotime($from);
+
+        if ($diff <= 3600) {
+            $mins = round($diff / 60);
+            return self::since($mins, array('минуту', 'минуты', 'минут'));
+        } elseif ($diff <= 86400 && $diff > 3600) {
+            $hours = round($diff / 3600);
+            return self::since($hours, array('час', 'часа', 'часов'));
+        } elseif ($diff >= 86400) {
+            $days = round($diff / 86400);
+            return self::since($days, array('день', 'дня', 'дней'));
+        }
+    }
+
+    private static function since($measure, array $variants)
+    {
+        if ($measure >= 1)
+            return sprintf('%s назад', Numeral::getPlural($measure, $variants));
+        return sprintf('через %s', Numeral::getPlural(abs($measure), $variants));
     }
 }
