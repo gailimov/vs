@@ -91,40 +91,39 @@ class Date
     {
         $diff = (($to) ? strtotime($to) : time()) - strtotime($from);
 
-        if ($diff < 3600 && $diff > -3600) {
-            $mins = round($diff / 60);
-            switch ($mins) {
-                case 1:
-                    return 'минуту назад';
-                case -1:
-                    return 'через минуту';
-                default:
-                    return self::since($mins, array('минуту', 'минуты', 'минут'));
-            }
-        } elseif (($diff < 86400 && $diff > - 86400) && ($diff >= 3600 || $diff <= -3600)) {
-            $hours = round($diff / 3600);
-            switch ($hours) {
-                case 1:
-                    return 'час назад';
-                case -1:
-                    return 'через час';
-                default:
-                    return self::since($hours, array('час', 'часа', 'часов'));
-            }
-        } elseif ($diff >= 86400 || $diff <= -86400) {
+        if ($diff < 3600 && $diff > -3600)
+            return self::when(round($diff / 60), array('минуту', 'минуты', 'минут'));
+        elseif (($diff < 86400 && $diff > -86400) && ($diff >= 3600 || $diff <= -3600))
+            return self::when(round($diff / 3600), array('час', 'часа', 'часов'));
+        elseif ($diff >= 86400 || $diff <= -86400) {
             $days = round($diff / 86400);
-            switch($days) {
-                case 1:
-                    return 'вчера';
-                case 2:
-                    return 'позавчера';
-                case -1:
-                    return 'завтра';
-                case -2:
-                    return 'послезавтра';
-                default:
-                    return self::since($days, array('день', 'дня', 'дней'));
-            }
+            if ($days == 1)
+                return 'вчера';
+            elseif ($days == 2)
+                return 'позавчера';
+            elseif ($days == -1)
+                return 'завтра';
+            elseif ($days == -2)
+                return 'послезавтра';
+            elseif ($days % 7 == 0)
+                return self::when($days / 7, array('неделю', 'недели', 'недель'));
+            elseif ($days % 30 == 0)
+                return self::when($days / 30, array('месяц', 'месяца', 'месяцев'));
+            elseif ($days % 365 == 0)
+                return self::when($days / 365, array('год', 'года', 'лет'));
+            return self::since($days, array('день', 'дня', 'дней'));
+        }
+    }
+
+    private static function when($measure, array $variants)
+    {
+        switch ($measure) {
+            case 1:
+                return sprintf('%s назад', $variants[0]);
+            case -1:
+                return sprintf('через %s', $variants[0]);
+            default:
+                return self::since($measure, $variants);
         }
     }
 
