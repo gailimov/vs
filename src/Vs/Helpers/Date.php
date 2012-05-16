@@ -13,6 +13,8 @@
 
 namespace Vs\Helpers;
 
+require_once 'Numeral.php';
+
 /**
  * Helper for working with dates
  *
@@ -76,5 +78,53 @@ class Date
         }
 
         return $result;
+    }
+
+    /**
+     * Returns relative date
+     *
+     * @param  string $from      Datetime from which the difference begins.
+     * @param  string $to        Datetime to end the difference. Default becomes time() if not set.
+     * @param  int    $precision Precision (how many units of time needs to display)
+     * @return string
+     */
+    public static function relative($from, $to = null, $precision = 2)
+    {
+        $dates = array(
+            365 * 24 * 60 * 60 => array('год', 'года', 'лет'),
+            30 * 24 * 60 * 60 => array('месяц', 'месяца', 'месяцев'),
+            7 * 24 * 60 * 60 => array('неделю', 'недели', 'недель'),
+            24 * 60 * 60 => array('день', 'дня', 'дней'),
+            60 * 60 => array('час', 'часа', 'часов'),
+            60 => array('минуту', 'минуты', 'минут'),
+            1 => array('секунду', 'секунды', 'секунд')
+        );
+
+        $diff = (($to) ? strtotime($to) : time()) - strtotime($from);
+
+        // All that is less than 30 seconds — will be considered as present time
+        if ($diff < 30) {
+            $output = 'только что';
+        } else {
+            $output = array();
+            $exit = 0;
+            foreach ($dates as $time => $unit) {
+                if ($exit >= $precision || ($exit > 0 && $time < 60))
+                    break;
+                $result = floor($diff / $time);
+                if ($result > 0) {
+                    $output[] = Numeral::getPlural($result, $unit);
+                    $diff -= $result * $time;
+                    $exit++;
+                } elseif ($exit > 0) {
+                    $exit++;
+                }
+            }
+            if (count($output) > 1)
+                $output[count($output) - 1] = 'и ' . end($output);
+            $output = sprintf('%s назад', str_replace(', и', ' и', implode(', ', $output)));
+        }
+
+        return $output;
     }
 }
