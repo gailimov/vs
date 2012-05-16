@@ -91,12 +91,41 @@ class Date
     {
         $diff = (($to) ? strtotime($to) : time()) - strtotime($from);
 
-        if ($diff <= 3600)
-            return self::since(round($diff / 60), array('минуту', 'минуты', 'минут'));
-        elseif ($diff <= 86400 && $diff > 3600)
-            return self::since(round($diff / 3600), array('час', 'часа', 'часов'));
-        elseif ($diff >= 86400)
-            return self::since(round($diff / 86400), array('день', 'дня', 'дней'));
+        if ($diff < 3600 && $diff > -3600) {
+            $mins = round($diff / 60);
+            switch ($mins) {
+                case 1:
+                    return 'минуту назад';
+                case -1:
+                    return 'через минуту';
+                default:
+                    return self::since($mins, array('минуту', 'минуты', 'минут'));
+            }
+        } elseif (($diff < 86400 && $diff > - 86400) && ($diff >= 3600 || $diff <= -3600)) {
+            $hours = round($diff / 3600);
+            switch ($hours) {
+                case 1:
+                    return 'час назад';
+                case -1:
+                    return 'через час';
+                default:
+                    return self::since($hours, array('час', 'часа', 'часов'));
+            }
+        } elseif ($diff >= 86400 || $diff <= -86400) {
+            $days = round($diff / 86400);
+            switch($days) {
+                case 1:
+                    return 'вчера';
+                case 2:
+                    return 'позавчера';
+                case -1:
+                    return 'завтра';
+                case -2:
+                    return 'послезавтра';
+                default:
+                    return self::since($days, array('день', 'дня', 'дней'));
+            }
+        }
     }
 
     private static function since($measure, array $variants)
